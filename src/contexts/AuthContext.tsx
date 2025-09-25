@@ -33,7 +33,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(localStorage.getItem("authToken"));
 
-  const API_BASE = "https://backend-dims.vercel.app/";
+  const API_BASE = "https://backend-dims.vercel.app";
 
   // Decode JWT manually
   const decodeToken = (t: string) => {
