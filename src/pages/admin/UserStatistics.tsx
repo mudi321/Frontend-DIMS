@@ -33,7 +33,7 @@ const UserStatistics = () => {
     if (!token) return;
 
     try {
-      const res = await axios.get("http://localhost:5000/api/users", {
+      const res = await axios.get("https://backend-dims.vercel.app/api/users", {
         headers: { Authorization: `Bearer ${token}` },
       });
 

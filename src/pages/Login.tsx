@@ -38,7 +38,7 @@ const Login = () => {
       setAccount(walletAddress);
 
       // Call backend MetaMask login
-      const response = await axios.post("http://localhost:5000/api/users/metamask-login", { walletAddress });
+      const response = await axios.post("https://backend-dims.vercel.app/api/users/metamask-login", { walletAddress });
       const token = response.data.data.token;
 
       localStorage.setItem("authToken", token);

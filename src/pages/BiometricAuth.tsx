@@ -19,7 +19,7 @@ declare global {
 }
 
 
-const API_BASE_URL = 'http://localhost:5000/api/auth';
+const API_BASE_URL = 'https://backend-dims.vercel.app/api/auth';
 
 // Convert ArrayBuffer <-> base64url
 const arrayBufferToBase64url = (buffer: ArrayBuffer) => {

@@ -43,7 +43,7 @@ const AuditLogs = () => {
   const fetchAuditLogs = async () => {
     try {
       const token = localStorage.getItem("authToken");
-      const res = await axios.get("http://localhost:5000/api/audit-logs", {
+      const res = await axios.get("https://backend-dims.vercel.app/api/audit-logs", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const logsArray = Array.isArray(res.data.data) ? res.data.data : [];

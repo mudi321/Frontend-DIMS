@@ -27,7 +27,7 @@ const Profile = () => {
 
     const fetchUser = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/users/${user.id}`, {
+        const res = await axios.get(`https://backend-dims.vercel.app/api/users/${user.id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.data.success) {
