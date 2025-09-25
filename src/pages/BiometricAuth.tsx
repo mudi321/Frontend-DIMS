@@ -1,23 +1,11 @@
 import React, { useState, useEffect } from 'react';
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuth } from "@/contexts/AuthContext";
-import { useNavigate, Link } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
-import { User, Wallet } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { User } from "lucide-react";
 import HeroGradient from "@/components/HeroGradient/HeroGradient";
-import axios from "axios";
-
-
-declare global {
-  interface Window {
-    ethereum?: any;
-  }
-}
-
 
 const API_BASE_URL = 'https://backend-dims.vercel.app/api/auth';
 
@@ -40,7 +28,7 @@ const BiometricAuth: React.FC = () => {
   const [isSupported, setIsSupported] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [status, setStatus] = useState('');
-  const [username, setUsername] = useState('user@example.com'); // can be dynamic input
+  const [username, setUsername] = useState('user@example.com');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -107,10 +95,12 @@ const BiometricAuth: React.FC = () => {
       const options = await res.json();
 
       options.challenge = base64urlToArrayBuffer(options.challenge);
-      options.allowCredentials = options.allowCredentials.map((c: any) => ({
-        ...c,
-        id: base64urlToArrayBuffer(c.id)
-      }));
+      if (options.allowCredentials && options.allowCredentials.length) {
+        options.allowCredentials = options.allowCredentials.map((c: any) => ({
+          ...c,
+          id: base64urlToArrayBuffer(c.id)
+        }));
+      }
 
       const cred = await navigator.credentials.get({ publicKey: options }) as PublicKeyCredential;
 
@@ -121,7 +111,7 @@ const BiometricAuth: React.FC = () => {
           authenticatorData: arrayBufferToBase64url((cred.response as AuthenticatorAssertionResponse).authenticatorData),
           clientDataJSON: arrayBufferToBase64url((cred.response as AuthenticatorAssertionResponse).clientDataJSON),
           signature: arrayBufferToBase64url((cred.response as AuthenticatorAssertionResponse).signature),
-          userHandle: (cred.response as AuthenticatorAssertionResponse).userHandle
+          userHandle: cred.response && (cred.response as AuthenticatorAssertionResponse).userHandle
             ? arrayBufferToBase64url((cred.response as AuthenticatorAssertionResponse).userHandle!)
             : null
         }
@@ -150,68 +140,50 @@ const BiometricAuth: React.FC = () => {
   if (!isSupported) return <div>WebAuthn is not supported in this browser.</div>;
 
   return (
-    // <div style={{ padding: 20 }}>
-    //   <input
-    //     type="email"
-    //     value={username}
-    //     onChange={(e) => setUsername(e.target.value)}
-    //     placeholder="Enter your email"
-    //     style={{ marginBottom: 10, padding: 5 }}
-    //   />
-    //   {!isRegistered ? (
-    //     <button onClick={registerBiometric}>Register Biometric</button>
-    //   ) : (
-    //     <button onClick={authenticateBiometric}>Authenticate</button>
-    //   )}
-    //   <p>{status}</p>
-    // </div>
-    
     <section>
-  <HeroGradient />
-  <div className="header-container min-h-screen flex items-center justify-center p-4">
-    <Card className="w-full max-w-md dashboard-card bg-neutral-400/20 hover:bg-neutral-400/30 text-neutral-50 backdrop-blur-md border-neutral-400">
-      <CardHeader className="text-center">
-        <div className="flex justify-center mb-4">
-          <User className="w-12 h-12 text-neutral-200" />
-        </div>
-        <CardTitle className="text-2xl">Biometric Login</CardTitle>
-        <CardDescription className="text-neutral-200">
-          Use your email and biometric authentication to continue
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter your email"
-              className="bg-neutral-400/20"
-              required
-            />
-          </div>
+      <HeroGradient />
+      <div className="header-container min-h-screen flex items-center justify-center p-4">
+        <Card className="w-full max-w-md dashboard-card bg-neutral-400/20 hover:bg-neutral-400/30 text-neutral-50 backdrop-blur-md border-neutral-400">
+          <CardHeader className="text-center">
+            <div className="flex justify-center mb-4">
+              <User className="w-12 h-12 text-neutral-200" />
+            </div>
+            <CardTitle className="text-2xl">Biometric Login</CardTitle>
+            <CardDescription className="text-neutral-200">
+              Use your email and biometric authentication to continue
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Enter your email"
+                  className="bg-neutral-400/20"
+                  required
+                />
+              </div>
 
-          {!isRegistered ? (
-            <Button onClick={registerBiometric} className="w-full">
-              Register Biometric
-            </Button>
-          ) : (
-            <Button onClick={authenticateBiometric} className="w-full">
-              Authenticate
-            </Button>
-          )}
+              {!isRegistered ? (
+                <Button onClick={registerBiometric} className="w-full">
+                  Register Biometric
+                </Button>
+              ) : (
+                <Button onClick={authenticateBiometric} className="w-full">
+                  Authenticate
+                </Button>
+              )}
 
-          <p className="text-sm text-center text-neutral-200">{status}</p>
-        </div>
-      </CardContent>
-    </Card>
-  </div>
-</section>
-
-
+              <p className="text-sm text-center text-neutral-200">{status}</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </section>
   );
 };
 
